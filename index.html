@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="sachi">
+<meta name="theme-color" content="#f4efe5">
+<title>🌸 sachi Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4efe5;--sf:#fff;--bd:#d8d0c2;--tx:#2c2416;--tx2:#8a7e6e;--tx3:#b8ad9e;
+  --ac:#c0392b;--ac-soft:rgba(192,57,43,0.07);--ac-text:#fff;
+  --green:#2d8a56;--red:#c0392b;--amber:#b8860b;--radius:8px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);color-scheme:light}
+html,body{height:100%;background:var(--bg);color:var(--tx);
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+body{padding-top:var(--safe-top);padding-bottom:var(--safe-bot)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:var(--safe-top);background:var(--bg);z-index:100}
+input,select,textarea,button{font:inherit;color:inherit;border:none;outline:none;background:none}
+button{cursor:pointer;-webkit-user-select:none;user-select:none}
+.page{display:none;flex-direction:column;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page.active{display:flex}
+.header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:var(--bg);border-bottom:1px solid var(--bd)}
+.header h1{font-size:19px;font-weight:600;letter-spacing:-0.3px}
+.header-actions{display:flex;gap:2px}
+.hbtn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-size:18px;color:var(--tx2);transition:background .15s}
+.hbtn:active{background:var(--bd)}
+.form-body{flex:1;padding:16px 20px 110px}
+.field{margin-bottom:18px}
+.fl{display:block;font-size:12px;font-weight:500;color:var(--tx2);margin-bottom:6px;letter-spacing:.2px}
+.fi{width:100%;padding:13px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--radius);
+  font-size:16px;color:var(--tx);transition:border-color .15s}
+.fi:focus{border-color:var(--ac)}
+.fi::placeholder{color:var(--tx3)}
+.aw{position:relative}
+.ac{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:600;color:var(--tx3)}
+.ai{font-size:34px;font-weight:700;letter-spacing:-.8px;padding:18px 16px 18px 38px;text-align:right;font-variant-numeric:tabular-nums}
+.sel{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:var(--radius);min-height:50px;cursor:pointer;transition:border-color .15s}
+.sel:active{border-color:var(--ac)}
+.sel .v{font-size:15px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sel .v.ph{color:var(--tx3)}
+.sel .ar{color:var(--tx3);font-size:13px;margin-left:8px}
+.pf{display:flex;gap:10px}
+.pf-row{display:flex;gap:10px;flex-wrap:wrap}
+.flag{flex:1;min-width:140px;display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:var(--radius);cursor:pointer;transition:all .15s;-webkit-user-select:none}
+.flag.on{border-color:var(--ac);background:var(--ac-soft)}
+.fd{width:11px;height:11px;border-radius:50%;border:2px solid var(--bd);flex-shrink:0;transition:all .15s}
+.flag.on .fd{background:var(--ac);border-color:var(--ac)}
+.ft{font-size:13px;color:var(--tx2);line-height:1.3}
+.flag.on .ft{color:var(--tx)}
+.inst-tog{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--radius);margin-bottom:10px;cursor:pointer;-webkit-user-select:none}
+.inst-tog .lb{flex:1;font-size:14px;color:var(--tx2)}
+.tt{width:44px;height:26px;border-radius:13px;background:var(--bd);position:relative;transition:background .2s;flex-shrink:0}
+.tt.on{background:var(--ac)}
+.tk{width:22px;height:22px;border-radius:11px;background:#fff;position:absolute;top:2px;left:2px;
+  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.tt.on .tk{transform:translateX(18px)}
+.inst-f{display:none;gap:10px;margin-top:10px}
+.inst-f.show{display:flex}
+.inst-f .field{flex:1;margin-bottom:0}
+.inst-f .fi{padding:10px 12px;font-size:14px}
+.sub-area{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;
+  padding-bottom:calc(14px + var(--safe-bot));background:linear-gradient(transparent,var(--bg) 25%);z-index:10}
+.sub-btn{width:100%;padding:16px;border-radius:var(--radius);font-size:16px;font-weight:600;letter-spacing:.3px;
+  background:var(--ac);color:var(--ac-text);border:none;transition:opacity .15s,transform .1s}
+.sub-btn:active{transform:scale(.98);opacity:.85}
+.sub-btn:disabled{opacity:.35;transform:none}
+.sub-btn.ok{background:var(--green)}
+
+/* overlay */
+.ov{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;flex-direction:column;padding-top:var(--safe-top)}
+.ov.open{display:flex}
+.ov-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd);background:var(--bg)}
+.ov-hd h2{font-size:17px;font-weight:600}
+.ov-cancel{font-size:15px;color:var(--ac);font-weight:600;padding:8px;cursor:pointer}
+.pills{display:flex;gap:8px;padding:12px 16px}
+.pill{padding:8px 16px;font-size:13px;font-weight:600;border-radius:20px;color:var(--tx2);
+  background:transparent;border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.pill.on{background:var(--ac);color:var(--ac-text);border-color:var(--ac)}
+.ov-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--safe-bot)}
+.og{padding:10px 16px 4px;font-size:11px;font-weight:600;color:var(--tx3);letter-spacing:.4px;position:sticky;top:0;background:var(--bg)}
+.oi{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(216,208,194,.5);cursor:pointer}
+.oi:active{background:var(--ac-soft)}
+.oi .p{font-size:15px;flex:1}
+.oi .p .dm{color:var(--tx2)}
+.oi .badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.b-nw{background:rgba(184,134,11,.1);color:var(--amber)}
+.b-nc{background:rgba(192,57,43,.08);color:var(--red)}
+.b-type{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,.04);color:var(--tx2);font-weight:600}
+.freq-dot{width:6px;height:6px;border-radius:3px;background:var(--ac);flex-shrink:0}
+
+/* settings */
+.sb{flex:1;padding:20px}
+.sb h2{font-size:15px;font-weight:600;margin-bottom:4px}
+.sb p{font-size:13px;color:var(--tx2);margin-bottom:12px;line-height:1.5}
+.sb .field{margin-bottom:16px}
+.sbtn{padding:13px 20px;border-radius:var(--radius);font-size:14px;font-weight:600;background:var(--sf);
+  border:1px solid var(--bd);color:var(--tx);margin-bottom:10px;width:100%;cursor:pointer;transition:background .15s}
+.sbtn:active{background:var(--bd)}
+.sbtn.pr{background:var(--ac);color:var(--ac-text);border-color:var(--ac)}
+.tr{font-size:13px;padding:10px 12px;border-radius:var(--radius);margin-top:8px;display:none}
+.tr.ok{display:block;background:rgba(45,138,86,.08);color:var(--green)}
+.tr.err{display:block;background:rgba(192,57,43,.08);color:var(--red)}
+.recent{margin-top:24px;padding-top:18px;border-top:1px solid var(--bd)}
+.recent h3{font-size:13px;color:var(--tx2);margin-bottom:10px;font-weight:500}
+.ri{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid rgba(216,208,194,.4);font-size:13px}
+.ri .rc{flex:1;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ri .ra{font-weight:600;font-variant-numeric:tabular-nums}
+.ri .ra.ex{color:var(--red)}
+.ri .ra.inc{color:var(--green)}
+.toast{position:fixed;top:calc(20px + var(--safe-top));left:50%;transform:translateX(-50%) translateY(-80px);
+  padding:12px 22px;border-radius:var(--radius);font-size:14px;font-weight:600;z-index:200;
+  transition:transform .3s ease;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--green);color:#fff}
+.toast.err{background:var(--red);color:#fff}
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+
+<div id="page-entry" class="page active">
+  <div class="header"><h1>🌸 sachi Ledger</h1>
+    <div class="header-actions"><button class="hbtn" onclick="showPage('history')">⏱</button><button class="hbtn" onclick="showPage('settings')">⚙</button></div></div>
+  <div class="form-body">
+    <div class="field"><label class="fl">Amount</label>
+      <div class="aw"><span class="ac">$</span>
+        <input id="f-amt" class="fi ai" type="text" inputmode="decimal" placeholder="0.00" onfocus="this.select()" oninput="fmtA(this)">
+      </div></div>
+    <div class="field"><label class="fl">Date</label><input id="f-date" class="fi" type="date"></div>
+    <div class="pf-row">
+      <div class="field" style="flex:1"><label class="fl">Paid</label>
+        <div class="sel" onclick="openOv('paid')"><span id="d-paid" class="v ph">Select…</span><span class="ar">▸</span></div></div>
+      <div class="field" style="flex:1"><label class="fl">From</label>
+        <div class="sel" onclick="openOv('from')"><span id="d-from" class="v ph">Select…</span><span class="ar">▸</span></div></div>
+    </div>
+    <div class="field"><label class="fl">Flags</label>
+      <div class="pf">
+        <div id="flag-cf" class="flag on" onclick="tFlag('cf')"><div class="fd"></div><div class="ft">Cash Flow</div></div>
+        <div id="flag-nw" class="flag" onclick="tFlag('nw')"><div class="fd"></div><div class="ft">Net Worth</div></div>
+      </div></div>
+    <div class="field">
+      <div class="inst-tog" onclick="tInst()"><span class="lb">Spread / Installment</span>
+        <div id="it" class="tt"><div class="tk"></div></div></div>
+      <div id="if" class="inst-f">
+        <div class="field"><label class="fl">Every</label><input id="f-ii" class="fi" type="number" inputmode="numeric" value="1" min="1"></div>
+        <div class="field"><label class="fl">Unit</label><select id="f-iu" class="fi" style="appearance:auto;-webkit-appearance:menulist">
+          <option value="month">Month</option><option value="week">Week</option><option value="year">Year</option></select></div>
+        <div class="field"><label class="fl">Count</label><input id="f-ic" class="fi" type="number" inputmode="numeric" value="12" min="2"></div>
+      </div></div>
+    <div class="field"><label class="fl">Note</label><input id="f-note" class="fi" type="text" placeholder="Optional…"></div>
+    <div id="rec-sec" class="recent" style="display:none"><h3>This session</h3><div id="rec-list"></div></div>
+  </div>
+  <div class="sub-area"><button id="sub-btn" class="sub-btn" onclick="submit()">Log Entry</button></div>
+</div>
+
+<div id="page-history" class="page">
+  <div class="header"><button class="hbtn" onclick="showPage('entry')">←</button><h1>History</h1><div style="width:38px"></div></div>
+  <div class="form-body" style="padding-bottom:20px">
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:14px">This session only. Full history in your Sheet.</p>
+    <div id="hist-list"></div>
+    <div id="hist-empty" style="text-align:center;padding:48px 0;color:var(--tx3);font-size:14px">No entries yet.</div>
+  </div>
+</div>
+
+<div id="page-settings" class="page">
+  <div class="header"><button class="hbtn" onclick="showPage('entry')">←</button><h1>Settings</h1><div style="width:38px"></div></div>
+  <div class="sb">
+    <h2>Google Sheets connection</h2>
+    <p>Paste your Google Apps Script Web App URL.</p>
+    <div class="field"><input id="s-url" class="fi" type="url" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <button class="sbtn pr" onclick="saveUrl()">Save URL</button>
+    <button class="sbtn" onclick="testC()">Test connection</button>
+    <div id="t-res" class="tr"></div>
+    <div style="margin-top:36px"><h2>Backup</h2><p>Export session as CSV.</p>
+      <button class="sbtn" onclick="expCSV()">Export CSV</button></div>
+  </div>
+</div>
+
+<!-- PAID PICKER -->
+<div id="ov-paid" class="ov">
+  <div class="ov-hd"><h2>Paid</h2><span class="ov-cancel" onclick="closeOv('paid')">Cancel</span></div>
+  <div class="pills" id="pills-paid">
+    <div class="pill on" onclick="sTab('paid',0)">Expense</div>
+    <div class="pill" onclick="sTab('paid',1)">Assets</div>
+    <div class="pill" onclick="sTab('paid',2)">Liability</div>
+  </div>
+  <div id="list-paid" class="ov-list"></div>
+</div>
+
+<!-- FROM PICKER -->
+<div id="ov-from" class="ov">
+  <div class="ov-hd"><h2>From</h2><span class="ov-cancel" onclick="closeOv('from')">Cancel</span></div>
+  <div class="pills" id="pills-from">
+    <div class="pill on" onclick="sTab('from',0)">Assets</div>
+    <div class="pill" onclick="sTab('from',1)">Income</div>
+    <div class="pill" onclick="sTab('from',2)">Liability</div>
+  </div>
+  <div id="list-from" class="ov-list"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ── DATA ── */
+var PAID=[
+  {tab:'Expense',groups:[
+    {g:'Food',items:[{p:'E-Food > Dine Out',cf:1,nw:0},{p:'E-Food > Groceries',cf:1,nw:0},{p:'E-Food > Snacks & Drinks',cf:1,nw:0}]},
+    {g:'Branding',items:[{p:'E-Branding > Clothes',cf:1,nw:0},{p:'E-Branding > Laundry',cf:1,nw:0},{p:'E-Branding > Haircut',cf:1,nw:0},{p:'E-Branding > Mens Care',cf:1,nw:0}]},
+    {g:'Entertainment',items:[{p:'E-Entertainment > General',cf:1,nw:0},{p:'E-Entertainment > Dining',cf:1,nw:0},{p:'E-Entertainment > Subscription',cf:1,nw:0},{p:'E-Entertainment > Games',cf:1,nw:0},{p:'E-Entertainment > Tech',cf:1,nw:0},{p:'E-Entertainment > Golf > Expense',cf:1,nw:0},{p:'E-Entertainment > Golf > Equipment',cf:1,nw:0},{p:'E-Entertainment > Golf > Training',cf:1,nw:0},{p:'E-Entertainment > Golf > Apparel',cf:1,nw:0}]},
+    {g:'Travel',items:[{p:'E-Travel > Flights',cf:1,nw:0},{p:'E-Travel > Hotels',cf:1,nw:0},{p:'E-Travel > Activities',cf:1,nw:0},{p:'E-Travel > Transport',cf:1,nw:0},{p:'E-Travel > Travel Dining',cf:1,nw:0}]},
+    {g:'Housing',items:[{p:'E-Housing > HOA',cf:1,nw:0},{p:'E-Housing > Property Tax',cf:1,nw:0},{p:'E-Housing > Home Insurance',cf:1,nw:0},{p:'E-Housing > Internet',cf:1,nw:0},{p:'E-Housing > Utilities',cf:1,nw:0},{p:'E-Housing > Maintenance',cf:1,nw:0},{p:'E-Housing > Mortgage Interest',cf:1,nw:0}]},
+    {g:'Auto',items:[{p:'E-Auto > Gas',cf:1,nw:0},{p:'E-Auto > Insurance',cf:1,nw:0},{p:'E-Auto > Repair',cf:1,nw:0},{p:'E-Auto > Car Wash',cf:1,nw:0},{p:'E-Auto > Improvement',cf:1,nw:0},{p:'E-Auto > Fees',cf:1,nw:0},{p:'E-Auto > Depreciation (Kika)',cf:0,nw:0}]},
+    {g:'Wellness',items:[{p:'E-Wellness > Exercise',cf:1,nw:0},{p:'E-Wellness > Health',cf:1,nw:0}]},
+    {g:'Social',items:[{p:'E-Social > Gifts',cf:1,nw:0},{p:'E-Social > Donation',cf:1,nw:0},{p:'E-Social > Social',cf:1,nw:0}]},
+    {g:'Family',items:[{p:'E-Family > Support',cf:1,nw:0}]},
+    {g:'Learning',items:[{p:'E-Learning > Courses',cf:1,nw:0},{p:'E-Learning > Books',cf:1,nw:0}]},
+    {g:'Misc',items:[{p:'E-Misc > General',cf:1,nw:0},{p:'E-Misc > Necessities',cf:1,nw:0},{p:'E-Misc > Living',cf:1,nw:0},{p:'E-Misc > Transportation',cf:1,nw:0}]},
+    {g:'Adjustment',items:[{p:'E-Adjustment > Loss',cf:0,nw:0},{p:'E-Adjustment > Write-off',cf:0,nw:0}]}
+  ]},
+  {tab:'Assets',groups:[
+    {g:'Housing',items:[{p:'T-Housing > Chroma West',cf:1,nw:1},{p:'T-Housing > TPE House',cf:1,nw:1}]},
+    {g:'Investment',items:[{p:'T-Investment > Schwab 616',cf:1,nw:1},{p:'T-Investment > Empower 401k',cf:1,nw:1},{p:'T-Investment > IRA Roth',cf:1,nw:1},{p:'T-Investment > IRA Traditional',cf:1,nw:1},{p:'T-Investment > NTGR ETrade',cf:1,nw:1},{p:'T-Investment > HSA',cf:1,nw:1}]},
+    {g:'Insurance',items:[{p:'T-Insurance > NY Life',cf:1,nw:1}]},
+    {g:'Asset',items:[{p:'T-Asset > Yacht Master',cf:0,nw:1}]},
+    {g:'Prepaid',items:[{p:'P-Prepaid > Starbucks',cf:1,nw:0},{p:'P-Prepaid > Insurance',cf:1,nw:0},{p:'P-Prepaid > Prime',cf:1,nw:0},{p:'P-Prepaid > Costco',cf:1,nw:0},{p:'P-Prepaid > FastTrak',cf:1,nw:0},{p:'P-Prepaid > Clippard',cf:1,nw:0},{p:'P-Prepaid > Coffee Machine',cf:1,nw:0}]},
+    {g:'AR-Pipi',items:[{p:'AR-Pipi > Food',cf:1,nw:0},{p:'AR-Pipi > Misc',cf:1,nw:0},{p:'AR-Pipi > Other',cf:0,nw:0}]}
+  ]},
+  {tab:'Liability',groups:[
+    {g:'Liability',items:[{p:'L-Liability > Allen',cf:1,nw:0},{p:'L-Liability > AP Pipi',cf:1,nw:0},{p:'L-Liability > Betterment',cf:1,nw:0}]},
+    {g:'AR',items:[{p:'AR > Credits',cf:0,nw:0},{p:'AR > Receivable',cf:0,nw:0}]}
+  ]}
+];
+
+var FROM=[
+  {tab:'Assets',groups:[
+    {g:'Card',items:['Sapphire','Pipi Amex','Bebe Gold','Amex Platinum','Venture X','Amex Blue','Pipi Venture','AA Platinum','Costco Visa','BOA Red','Discover','Apple','Pipi Freedom','Pipi CSP','Freedom Flex']},
+    {g:'Cash',items:['BOA Checking','Cash','Fuban']},
+    {g:'Prepaid',items:['Starbucks','Insurance','Prime','Costco','FastTrak','Clippard','Coffee Machine']},
+    {g:'AR',items:['Pipi Food','Pipi Misc']}
+  ]},
+  {tab:'Income',groups:[
+    {g:'Income',items:[{p:'I-Income > Salary',cf:1,nw:0},{p:'I-Income > Investment Gain',cf:1,nw:0},{p:'I-Income > Cashback',cf:1,nw:0},{p:'I-Income > Pocket Money',cf:1,nw:0},{p:'I-Income > Pipi Reimbursement',cf:1,nw:0},{p:'I-Income > Other',cf:1,nw:0}]}
+  ]},
+  {tab:'Liability',groups:[
+    {g:'Liability',items:['Allen','AP Pipi','Betterment']},
+    {g:'AR',items:['Credits','Receivable']}
+  ]}
+];
+
+/* ── STATE ── */
+var gasUrl='',selPaid=null,selFrom=null,isCF=1,isNW=0,instOn=0,sess=[];
+var pTab=0,fTab=0,freq={paid:{},from:{}};
+
+/* ── INIT ── */
+function init(){
+  try{gasUrl=localStorage.getItem('sachi_url')||'';
+    freq=JSON.parse(localStorage.getItem('sachi_freq')||'{"paid":{},"from":{}}');}catch(e){}
+  document.getElementById('s-url').value=gasUrl;
+  document.getElementById('f-date').value=isoD(new Date());
+}
+function isoD(d){return d.getFullYear()+'-'+S(d.getMonth()+1)+'-'+S(d.getDate())}
+function S(n){return String(n).padStart(2,'0')}
+function mmdd(iso){var p=iso.split('-');return p[1]+'/'+p[2]+'/'+p[0]}
+function showPage(n){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-'+n).classList.add('active');if(n==='history')rHist()}
+function fmtA(el){var v=el.value.replace(/[^0-9.]/g,'');var pts=v.split('.');
+  if(pts.length>2)v=pts[0]+'.'+pts.slice(1).join('');el.value=v}
+function tFlag(w){if(w==='cf'){isCF=isCF?0:1;document.getElementById('flag-cf').classList.toggle('on',isCF)}
+  else{isNW=isNW?0:1;document.getElementById('flag-nw').classList.toggle('on',isNW)}}
+function sFlags(cf,nw){isCF=cf;isNW=nw;
+  document.getElementById('flag-cf').classList.toggle('on',cf);document.getElementById('flag-nw').classList.toggle('on',nw)}
+function tInst(){instOn=instOn?0:1;document.getElementById('it').classList.toggle('on',instOn);
+  document.getElementById('if').classList.toggle('show',instOn)}
+
+/* ── OVERLAY ── */
+function openOv(type){document.getElementById('ov-'+type).classList.add('open');
+  if(type==='paid')rPaid();else rFrom()}
+function closeOv(type){document.getElementById('ov-'+type).classList.remove('open')}
+
+function sTab(type,idx){
+  if(type==='paid'){pTab=idx;rPaid()}else{fTab=idx;rFrom()}
+  var pills=document.getElementById('pills-'+type).children;
+  for(var i=0;i<pills.length;i++)pills[i].classList.toggle('on',i===idx);
+}
+
+/* ── RENDER PAID LIST ── */
+function rPaid(){
+  var tab=PAID[pTab],list=document.getElementById('list-paid'),html='';
+  var fq=freq.paid,all=[];
+  tab.groups.forEach(function(g){g.items.forEach(function(it){all.push({it:it,g:g.g})})});
+  var top=all.filter(function(x){return(fq[x.it.p]||0)>0}).sort(function(a,b){return(fq[b.it.p]||0)-(fq[a.it.p]||0)});
+  if(top.length){
+    html+='<div class="og">Frequent</div>';
+    top.forEach(function(x){html+=paidRow(x.it)});
+  }
+  tab.groups.forEach(function(g){
+    html+='<div class="og">'+g.g+'</div>';
+    g.items.forEach(function(it){html+=paidRow(it)});
+  });
+  list.innerHTML=html;
+}
+
+function paidRow(it){
+  var segs=it.p.split(' > '),last=segs[segs.length-1],pre=segs.slice(0,-1).join(' > ');
+  var badges='';
+  if(!it.cf)badges+='<span class="badge b-nc">no CF</span> ';
+  if(it.nw)badges+='<span class="badge b-nw">NW</span>';
+  var dot=(freq.paid[it.p]||0)>0?'<span class="freq-dot"></span>':'';
+  return '<div class="oi" onclick=\'pickPaid('+JSON.stringify(it)+')\'>'
+    +dot+'<span class="p"><span class="dm">'+pre+' > </span>'+last+'</span>'+badges+'</div>';
+}
+
+function pickPaid(it){
+  selPaid=it;
+  document.getElementById('d-paid').textContent=it.p.split(' > ').pop();
+  document.getElementById('d-paid').classList.remove('ph');
+  sFlags(it.cf,it.nw);
+  freq.paid[it.p]=(freq.paid[it.p]||0)+1;
+  try{localStorage.setItem('sachi_freq',JSON.stringify(freq))}catch(e){}
+  closeOv('paid');
+}
+
+/* ── RENDER FROM LIST ── */
+function rFrom(){
+  var tab=FROM[fTab],list=document.getElementById('list-from'),html='';
+  var fq=freq.from,all=[];
+  tab.groups.forEach(function(g){
+    if(typeof g.items[0]==='string'){g.items.forEach(function(s){all.push({name:s,g:g.g})})}
+    else{g.items.forEach(function(it){all.push({name:it.p,g:g.g,obj:it})})}
+  });
+  var top=all.filter(function(x){return(fq[x.name]||0)>0}).sort(function(a,b){return(fq[b.name]||0)-(fq[a.name]||0)});
+  if(top.length){
+    html+='<div class="og">Frequent</div>';
+    top.forEach(function(x){html+=fromRow(x)});
+  }
+  tab.groups.forEach(function(g){
+    html+='<div class="og">'+g.g+'</div>';
+    if(typeof g.items[0]==='string'){
+      g.items.forEach(function(s){html+=fromRow({name:s,g:g.g})});
+    }else{
+      g.items.forEach(function(it){html+=fromRow({name:it.p,g:g.g,obj:it})});
+    }
+  });
+  list.innerHTML=html;
+}
+
+function fromRow(x){
+  var dot=(freq.from[x.name]||0)>0?'<span class="freq-dot"></span>':'';
+  var display=x.name,badges='';
+  if(x.obj){
+    var segs=x.obj.p.split(' > ');display=segs[segs.length-1];
+    var pre=segs.slice(0,-1).join(' > ');
+    display='<span class="dm">'+pre+' > </span>'+segs[segs.length-1];
+  }
+  var esc=x.name.replace(/'/g,"\\'");
+  var onclick=x.obj?'pickFrom(\''+esc+'\','+JSON.stringify(x.obj)+')':'pickFrom(\''+esc+'\')';
+  return '<div class="oi" onclick="'+onclick+'">'+dot+'<span class="p">'+display+'</span>'
+    +'<span class="b-type">'+x.g+'</span></div>';
+}
+
+function pickFrom(name,obj){
+  selFrom={name:name,obj:obj||null};
+  document.getElementById('d-from').textContent=name.split(' > ').pop();
+  document.getElementById('d-from').classList.remove('ph');
+  if(obj)sFlags(obj.cf,obj.nw);
+  freq.from[name]=(freq.from[name]||0)+1;
+  try{localStorage.setItem('sachi_freq',JSON.stringify(freq))}catch(e){}
+  closeOv('from');
+}
+
+/* ── SUBMIT ── */
+function submit(){
+  var btn=document.getElementById('sub-btn');
+  var amt=document.getElementById('f-amt').value.trim();
+  var dateISO=document.getElementById('f-date').value;
+  var note=document.getElementById('f-note').value.trim();
+  if(!amt||isNaN(parseFloat(amt))){toast('Enter amount','err');return}
+  if(!selPaid){toast('Select Paid','err');return}
+  if(!dateISO){toast('Select date','err');return}
+  if(!gasUrl){toast('Set URL in Settings','err');return}
+  var amount=parseFloat(amt),dateFmt=mmdd(dateISO);
+
+  var category,account;
+  var fromName=selFrom?selFrom.name:'';
+  if(fromName.indexOf('I-')===0){category=fromName;account=selPaid.p;}
+  else{category=selPaid.p;account=fromName;}
+
+  var entries=[],instId=instOn?'INST-'+Date.now().toString(36):'';
+  if(instOn){
+    var iv=parseInt(document.getElementById('f-ii').value)||1;
+    var unit=document.getElementById('f-iu').value;
+    var cnt=parseInt(document.getElementById('f-ic').value)||12;
+    var per=Math.floor(amount/cnt*100)/100;
+    var rem=Math.round((amount-per*cnt)*100)/100;
+    var s=new Date(dateISO+'T12:00:00');
+    for(var i=0;i<cnt;i++){
+      var d=new Date(s);
+      if(unit==='month')d.setMonth(d.getMonth()+i*iv);
+      else if(unit==='week')d.setDate(d.getDate()+i*iv*7);
+      else d.setFullYear(d.getFullYear()+i*iv);
+      entries.push({date:mmdd(isoD(d)),category:category,amount:i===cnt-1?per+rem:per,
+        is_cashflow:!!isCF,is_networth_transfer:!!isNW,account:account,
+        note:note?note+' ['+(i+1)+'/'+cnt+']':'['+(i+1)+'/'+cnt+']',installment_id:instId});
+    }
+  }else{
+    entries.push({date:dateFmt,category:category,amount:amount,
+      is_cashflow:!!isCF,is_networth_transfer:!!isNW,account:account,
+      note:note,installment_id:''});
+  }
+
+  btn.textContent='Sending…';btn.disabled=true;
+  fetch(gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({entries:entries})})
+  .then(function(){
+    btn.textContent='✓ Logged';btn.classList.add('ok');
+    toast('Logged '+entries.length+' entr'+(entries.length>1?'ies':'y'),'ok');
+    entries.forEach(function(e){sess.unshift(e)});rRec();resetF();
+    setTimeout(function(){btn.textContent='Log Entry';btn.classList.remove('ok');btn.disabled=false},1500);
+  }).catch(function(){
+    btn.textContent='✓ Sent';btn.classList.add('ok');
+    toast('Sent — check Sheet','ok');
+    entries.forEach(function(e){sess.unshift(e)});rRec();resetF();
+    setTimeout(function(){btn.textContent='Log Entry';btn.classList.remove('ok');btn.disabled=false},1500);
+  });
+}
+
+function resetF(){document.getElementById('f-amt').value='';document.getElementById('f-note').value='';
+  if(instOn)tInst()}
+
+/* ── RECENT / HISTORY ── */
+function rRec(){var s=document.getElementById('rec-sec'),l=document.getElementById('rec-list');
+  if(!sess.length){s.style.display='none';return}s.style.display='block';
+  l.innerHTML=sess.slice(0,5).map(function(e){var inc=e.category.indexOf('I-')===0;
+    return'<div class="ri"><span class="rc">'+e.category+'</span>'
+      +'<span class="ra '+(inc?'inc':'ex')+'">'+(inc?'+':'-')+'$'+e.amount.toFixed(2)+'</span></div>'}).join('')}
+
+function rHist(){var l=document.getElementById('hist-list'),em=document.getElementById('hist-empty');
+  if(!sess.length){em.style.display='block';l.innerHTML='';return}em.style.display='none';
+  l.innerHTML=sess.map(function(e){var inc=e.category.indexOf('I-')===0;
+    return'<div class="ri"><span style="font-size:12px;color:var(--tx3);width:68px;flex-shrink:0">'+e.date+'</span>'
+      +'<span class="rc">'+e.category+(e.account?' · '+e.account:'')+(e.note?' · '+e.note:'')+'</span>'
+      +'<span class="ra '+(inc?'inc':'ex')+'">'+(inc?'+':'-')+'$'+e.amount.toFixed(2)+'</span></div>'}).join('')}
+
+/* ── SETTINGS ── */
+function saveUrl(){gasUrl=document.getElementById('s-url').value.trim();
+  try{localStorage.setItem('sachi_url',gasUrl)}catch(e){}toast('URL saved','ok')}
+function testC(){var el=document.getElementById('t-res');
+  if(!gasUrl){el.textContent='No URL set.';el.className='tr err';return}
+  el.textContent='Testing…';el.className='tr ok';
+  fetch(gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({test:true,entries:[{date:'TEST',category:'Connection test',amount:0,
+      is_cashflow:true,is_networth_transfer:false,account:'',note:'Test from sachi',installment_id:''}]})})
+  .then(function(){el.textContent='✓ Sent — check Sheet for TEST row.';el.className='tr ok'})
+  .catch(function(){el.textContent='✗ Failed. Check URL.';el.className='tr err'})}
+
+function expCSV(){if(!sess.length){toast('No entries','err');return}
+  var h='Date,Category,Amount,Is_Cashflow,Is_NetWorth_Transfer,Account,Note,Installment_ID';
+  var rows=sess.map(function(e){return'"'+e.date+'","'+e.category+'",'+e.amount+','+e.is_cashflow+','+e.is_networth_transfer+',"'+e.account+'","'+(e.note||'').replace(/"/g,'""')+'","'+e.installment_id+'"'});
+  var blob=new Blob([h+'\n'+rows.join('\n')],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='sachi_'+isoD(new Date())+'.csv';a.click();toast('CSV exported','ok')}
+
+function toast(msg,type){var el=document.getElementById('toast');el.textContent=msg;
+  el.className='toast '+type;requestAnimationFrame(function(){el.classList.add('show')});
+  setTimeout(function(){el.classList.remove('show')},2200)}
+
+init();
+</script>
+</body>
+</html>
